@@ -11,15 +11,23 @@ export class UsersService {
 
   async createUser(createUserDto: CreateUserDto): Promise<User> {
     try {
+      const findUserByEmail = await this.userModel.findOne({ email: createUserDto.email });
+      if(findUserByEmail){
+        throw new HttpException('User already exists', 409);
+      }
+
       let createUser = new this.userModel(createUserDto);
       return await createUser.save();
     } catch (err) {
-      console.log(err);
-      throw new HttpException('User already exists', 409);
+      throw new HttpException(err.message, err.status);
     }
   }
 
   async findOneByEmail(payload: JwtPayload): Promise<User> {
     return await this.userModel.findOne({ email: payload.email });
+  }
+
+  async findOneById(id: string): Promise<User> {
+    return await this.userModel.findOne({ _id: id });
   }
 }
