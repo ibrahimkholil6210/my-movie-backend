@@ -25,7 +25,7 @@ export class MoviesService {
 
   async myMovies(userId: string,options: IFilterOptions): Promise<Movie[]> {
     try{        
-        return await this.movieModal.find({user: userId, $text: { $search: options.search || '' }});
+        return await this.movieModal.find({user: userId, title: {$regex: options.search || '', $options: 'i'}});
     }catch(err){
         throw new HttpException(err.message, err.status || 500);
     }
