@@ -11,15 +11,23 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post('signup')
-  async createUser(@Body(ValidationPipe) createUserDto:CreateUserDto): Promise<User>{
+  async createUser(
+    @Body(ValidationPipe) createUserDto: CreateUserDto,
+  ): Promise<{ isCreated: boolean }> {
     return this.usersService.createUser(createUserDto);
   }
 
   @Get('testGuard')
   @UseGuards(AuthGuard('jwt'))
-  testAuthRoute(@Request() req){
-      return {
-          message: 'You did it!'
-      }
+  testAuthRoute(@Request() req) {
+    return {
+      message: 'You did it!',
+    };
+  }
+
+  @Get('/me')
+  @UseGuards(AuthGuard('jwt'))
+  me(@Request() req) {
+    return req.user;
   }
 }

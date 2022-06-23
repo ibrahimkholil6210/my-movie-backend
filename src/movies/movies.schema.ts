@@ -5,18 +5,21 @@ const userType = {
   ref: 'User',
 };
 
-export const MovieSchema = new mongoose.Schema({
-  title: {
-    type: String,
-    required: true,
+export const MovieSchema = new mongoose.Schema(
+  {
+    title: {
+      type: String,
+      required: true,
+    },
+    description: {
+      type: String,
+      required: true,
+    },
+    thumbnailUrl: {
+      type: String,
+      required: true,
+    },
+    user: userType,
   },
-  description: {
-    type: String,
-    required: true,
-  },
-  thumbnailUrl: {
-    type: String,
-    required: true,
-  },
-  user: userType,
-});
+  { timestamps: true },
+);

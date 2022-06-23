@@ -1,5 +1,4 @@
 import { IsNotEmpty } from 'class-validator';
-import * as mongoose from 'mongoose';
 
 export class CreateMovieDto {
     @IsNotEmpty()

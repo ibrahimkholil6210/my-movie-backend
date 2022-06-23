@@ -15,34 +15,46 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async validateUserByPassword(loginUserDto: LoginUserDto): Promise<JwtResponse> {
-    const findUserByEmail = await this.usersService.findOneByEmail(loginUserDto)
-
-    console.log(findUserByEmail)
+  async validateUserByPassword(
+    loginUserDto: LoginUserDto,
+  ): Promise<{ expiresIn: number; token: string, userName: string, email: string }> {
+    const findUserByEmail = await this.usersService.findOneByEmail(
+      loginUserDto,
+    );
+    
     if (!findUserByEmail) {
       throw new HttpException("Credentials didn't match", HttpStatus.NOT_FOUND);
     }
 
-    const comparePassowrd = await bcrypt.compare(loginUserDto.password, findUserByEmail.password)
+    const comparePassowrd = await bcrypt.compare(
+      loginUserDto.password,
+      findUserByEmail.password,
+    );
     if (!comparePassowrd) {
       throw new HttpException("Credentials didn't match", HttpStatus.NOT_FOUND);
     }
 
-    
-    const token = this.jwtService.sign({ id: findUserByEmail?._id, email: findUserByEmail?.email, userName: findUserByEmail?.userName })
+    const token = this.jwtService.sign({
+      id: findUserByEmail?._id,
+      email: findUserByEmail?.email,
+      userName: findUserByEmail?.userName,
+    });
 
     return {
       expiresIn: 3600,
-      token
-    }
-    
+      token,
+      email: findUserByEmail?.email,
+      userName: findUserByEmail?.userName
+    };
   }
 
-  async validateUserByJwt(payload: JwtPayload): Promise<boolean | HttpException> {
+  async validateUserByJwt(
+    payload: JwtPayload,
+  ): Promise<boolean | HttpException> {
     let user = await this.usersService.findOneById(payload?.id);
 
     if (user) {
-      return true
+      return true;
     } else {
       throw new UnauthorizedException();
     }

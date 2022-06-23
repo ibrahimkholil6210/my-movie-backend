@@ -9,15 +9,20 @@ import { JwtPayload } from 'src/auth/interfaces/jwt-payload.interface';
 export class UsersService {
   constructor(@InjectModel('User') private userModel: Model<User>) {}
 
-  async createUser(createUserDto: CreateUserDto): Promise<User> {
+  async createUser(
+    createUserDto: CreateUserDto,
+  ): Promise<{ isCreated: boolean }> {
     try {
-      const findUserByEmail = await this.userModel.findOne({ email: createUserDto.email });
-      if(findUserByEmail){
+      const findUserByEmail = await this.userModel.findOne({
+        email: createUserDto.email,
+      });
+      if (findUserByEmail) {
         throw new HttpException('User already exists', 409);
       }
 
       let createUser = new this.userModel(createUserDto);
-      return await createUser.save();
+      await createUser.save();
+      return { isCreated: true };
     } catch (err) {
       throw new HttpException(err.message, err.status);
     }
